@@ -31,11 +31,16 @@ public class SuyamvaramRestController {
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public ResponseEntity<?> login(@RequestBody User user) {
 		logger.info("login");
-		user = userService.login(user);
-		if (user != null) {
-			return new ResponseEntity<User>(user, HttpStatus.OK);
+		if (user.getUsername() != null && user.getUsername() != "" && user.getPassword() != null
+				&& user.getPassword() != "") {
+			user = userService.login(user);
+			if (user != null) {
+				return new ResponseEntity<User>(user, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<User>(user, HttpStatus.NOT_FOUND);
+			}
 		} else {
-			return new ResponseEntity<User>(user, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<User>(user, HttpStatus.NO_CONTENT);
 		}
 
 	}
@@ -43,11 +48,18 @@ public class SuyamvaramRestController {
 	@RequestMapping(value = "/register", method = RequestMethod.PUT)
 	public ResponseEntity<?> register(@RequestBody User user) {
 		logger.info("register " + user.toString());
-		user = userService.register(user);
-		if (user != null) {
-			return new ResponseEntity<User>(user, HttpStatus.CREATED);
+
+		if (user.getUsername() != null && user.getUsername() != "" && user.getPassword() != null
+				&& user.getPassword() != "") {
+			user = userService.register(user);
+			if (user != null) {
+				return new ResponseEntity<User>(user, HttpStatus.OK);
+			} else {
+				return new ResponseEntity<User>(user, HttpStatus.NOT_IMPLEMENTED);
+			}
+
 		} else {
-			return new ResponseEntity<User>(user, HttpStatus.NOT_IMPLEMENTED);
+			return new ResponseEntity<User>(user, HttpStatus.NO_CONTENT);
 		}
 
 	}
@@ -64,7 +76,12 @@ public class SuyamvaramRestController {
 	public ResponseEntity<?> unregister(@RequestBody User user) {
 		logger.info("register");
 		String regStaus = userService.unregister(user);
-		return new ResponseEntity<String>(regStaus, HttpStatus.OK);
+		if(regStaus.equalsIgnoreCase("Success")) {
+			return new ResponseEntity<String>(regStaus, HttpStatus.OK);
+		}else {
+			return new ResponseEntity<String>(regStaus, HttpStatus.NOT_IMPLEMENTED);
+		}
+		
 
 	}
 
@@ -87,6 +104,10 @@ public class SuyamvaramRestController {
 		return new ResponseEntity<String>(res, HttpStatus.OK);
 
 	}
+	
+	
+	
+	
 
 	@RequestMapping("/greeting")
 	public @ResponseBody String greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
@@ -96,47 +117,11 @@ public class SuyamvaramRestController {
 
 	@RequestMapping(value = "/test", method = RequestMethod.GET)
 	public ResponseEntity<?> test() {
-
+		logger.info("********** REST *************");
 		User user = new User("saravanan", "password");
-		return new ResponseEntity<User>(user, HttpStatus.NOT_IMPLEMENTED);
+		return new ResponseEntity<User>(user, HttpStatus.OK);
 
 	}
-	/*
-	 * @RequestMapping(value = "/login/{username}/{passwrod}") public @ResponseBody
-	 * User login(@PathVariable String username,@PathVariable String passwrod){ User
-	 * user= new User(username, passwrod) ; return user; }
-	 * 
-	 * @RequestMapping(value = "/test") public ResponseEntity<User> get() {
-	 * 
-	 * User user= new User("username", "passwrod") ;
-	 * 
-	 * return new ResponseEntity<User>(user, HttpStatus.OK); }
-	 *//*
-		 * @RequestMapping(value = "/CarService", method = RequestMethod.POST) public
-		 * ResponseEntity<Car> update(@RequestBody Car car) {
-		 * 
-		 * 
-		 * if (car != null) { car.setMiles(car.getMiles() + 100); }
-		 * 
-		 * // TODO: call persistence layer to update return new ResponseEntity<Car>(car,
-		 * HttpStatus.OK); }
-		 * 
-		 * @RequestMapping(value = "/LoginService", method = RequestMethod.POST) public
-		 * ResponseEntity<LoginResponse> LoginService(@RequestBody User user) {
-		 * LoginResponse loginResponse= new LoginResponse(); if (user != null) {
-		 * 
-		 * if( user.getUsername().equalsIgnoreCase("Saravanan")) {
-		 * 
-		 * loginResponse.setLoginStatus("Authorised"); }else {
-		 * loginResponse.setLoginStatus("UnAuthorised");
-		 * 
-		 * } return new ResponseEntity<LoginResponse>(loginResponse, HttpStatus.OK);
-		 * }else { loginResponse.setLoginStatus("NoInput"); return new
-		 * ResponseEntity<LoginResponse>(loginResponse, HttpStatus.OK);
-		 * 
-		 * }
-		 * 
-		 * }
-		 */
+	
 
 }
